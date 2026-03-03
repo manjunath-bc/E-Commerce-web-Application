@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <title>E-commerce Shop</title>
+    <style>
+        body { padding: 20px; }
+        .card-body { height: 250px; }
+        .card-img-top { max-height: 100px; object-fit: contain; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">E-commerce Shop</a>
+        <div class="collapse navbar-collapse">
+            <h4 class="mr-auto ml-3">Welcome, <span th:text="${username}">User</span></h4>
+            <ul class="navbar-nav">
+                <li class="nav-item active"><a class="nav-link" th:href="@{/user/products}">Products</a></li>
+                <li class="nav-item active"><a class="nav-link" th:href="@{/profileDisplay}">Profile</a></li>
+                <li class="nav-item active"><a class="nav-link" th:href="@{/logout}">Logout</a></li>
+                <li class="nav-item active">
+    <a class="nav-link" th:href="@{/cart}">
+        Cart <span id="cart-count" class="badge badge-danger">0</span>
+    </a>
+</li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h1>Welcome to E-commerce Shop</h1>
+
+    <div class="row" th:if="${products != null and !products.isEmpty()}">
+        <div class="col-md-3" th:each="product : ${products}">
+            <div class="card mb-4">
+                <img class="card-img-top" th:src="${product.image}" alt="product image">
+                <div class="card-body">
+                    <h4 class="card-title"><b th:text="${product.name}"></b></h4>
+                    <h5 class="card-text">Category: <span th:text="${product.category != null ? product.category.name : 'N/A'}"></span></h5>
+                    <h5 class="card-text">Price: $<span th:text="${product.price}"></span></h5>
+                    <p class="card-text">Description: <span th:text="${product.description}"></span></p>
+                    <button class="btn btn-primary" th:data-product-id="${product.id}" onclick="addToCart(this)">Add to Cart</button>  
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${products == null or products.isEmpty()}">
+        <p class="text-muted">No products available.</p>
+    </div>
+</div>
+
+<footer class="mt-4">
+    <div class="container">
+        <p>&copy; 2026 E-commerce Shop. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script>
+    let cartCount = 0;
+
+    function addToCart(btn) {
+        const productId = btn.getAttribute('data-product-id');
+
+        
+        fetch(`/cart/products/addtocart?id=${productId}`, { method: 'GET' });
+
+        cartCount++;
+        document.getElementById('cart-count').textContent = cartCount;
+
+        btn.textContent = 'Added ✓';
+        btn.classList.replace('btn-primary', 'btn-success');
+        setTimeout(() => {
+            btn.textContent = 'Add to Cart';
+            btn.classList.replace('btn-success', 'btn-primary');
+        }, 1000);
+    }
+</script>
+</body>
+</html>
